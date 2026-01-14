@@ -10,7 +10,7 @@ import Reports from "./pages/admin/Reports"
 import Users from "./pages/admin/Users"
 
 import ComplaintDetails from "./pages/department/ComplaintDetails"
-import Complaints from "./pages/department/Complaints"
+import Complaints from "./pages/department/DepartmentComplaints"
 import OfficerDashboard from "./pages/department/OfficerDashboard"
 
 import MyComplaints from "./pages/user/MyComplaints"

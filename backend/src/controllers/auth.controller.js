@@ -30,7 +30,7 @@ export const registerCitizen = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message:"Server error"
+      message: "Server error"
     })
   }
 };
@@ -39,28 +39,29 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if(!email || !password){
+    if (!email || !password) {
       return res.status(400).json({
-        message:"All fields are required"
+        message: "All fields are required"
       })
     }
 
     const user = await User.findOne({ email });
 
-    if (!user) return res.status(401).json({ 
-      message: "Invalid credentials" 
+    if (!user) return res.status(401).json({
+      message: "Invalid credentials"
     });
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch)
-      return res.status(401).json({ message: "Invalid credentials" 
-    });
+      return res.status(401).json({
+        message: "Invalid credentials"
+      });
 
     const accessToken = jwt.sign(
       {
         userId: user._id,
-        role:user.role
+        role: user.role
       },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "15m" }
@@ -76,7 +77,7 @@ export const loginUser = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie("refreshToken", refreshToken,{
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
       sameSite: "strict",
@@ -85,11 +86,12 @@ export const loginUser = async (req, res) => {
 
     res.status(200).json({
       message: "Login sucessfully",
-      accessToken
+      accessToken,
+      role: user.role
     });
-    
+
   } catch (error) {
-    console.error("Login error : ", err);
+    console.error("Login error : ", error);
     res.status(500).json({
       message: "Server error"
     })
@@ -120,34 +122,34 @@ export const logoutUser = async (req, res) => {
 };
 
 
-export const refresh =async(req,res)=>{
+export const refresh = async (req, res) => {
   try {
-    const token=req.cookies.refreshToken;
-    if(!token){
-      return res.status(401).json({messae:"Unauthorized"});
+    const token = req.cookies.refreshToken;
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
-  
-    const decoded=jwt.verify(token,process.env.REFRESH_TOKEN_SECRET);
-    const user=await User.findById(decoded.userId);
-  
-    if(!user || user.refreshToken !== token){
-      return res.status(403).json({ message: "Forbidden"});
+
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user || user.refreshToken !== token) {
+      return res.status(403).json({ message: "Forbidden" });
     }
-  
-    const newAccessToken=jwt.sign(
+
+    const newAccessToken = jwt.sign(
       {
-        userId:user._id,role:user.role
+        userId: user._id, role: user.role
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn:"15m"
+        expiresIn: "15m"
       }
     )
-    return res.status(200).json({accessToken : newAccessToken})
+    return res.status(200).json({ accessToken: newAccessToken })
   } catch (error) {
-    console.error("Refresh error : ",error);
+    console.error("Refresh error : ", error);
     return res.status(500).json({
-      message:"Server error"
+      message: "Server error"
     })
   }
 }
