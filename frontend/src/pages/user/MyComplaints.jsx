@@ -1,45 +1,40 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FileText, Clock, CheckCircle, ArrowLeft, Eye } from 'lucide-react'
 import Navbar from '../../components/Navbar'
-
-const complaints = [
-  {
-    id: 1,
-    title: 'Broken streetlight on Main Street',
-    category: 'Electricity',
-    status: 'Resolved',
-    date: 'Dec 20, 2025',
-  },
-  {
-    id: 2,
-    title: 'Pothole near community center',
-    category: 'Road',
-    status: 'In Progress',
-    date: 'Dec 22, 2025',
-  },
-  {
-    id: 3,
-    title: 'Water leakage in residential area',
-    category: 'Water',
-    status: 'Open',
-    date: 'Dec 25, 2025',
-  },
-]
+import { complaintApi } from '../../services/api';
 
 const statusStyles = {
-  Resolved: 'bg-green-100 text-green-700',
-  'In Progress': 'bg-blue-100 text-blue-700',
-  Open: 'bg-yellow-100 text-yellow-700',
+  pending: 'bg-yellow-100 text-yellow-700',
+  resolved: 'bg-green-100 text-green-700',
+  'in-progress': 'bg-blue-100 text-blue-700',
+  open: 'bg-yellow-100 text-yellow-700',
 }
 
 const MyComplaints = () => {
-  const navigate = useNavigate()
-  const [stats,setStats]=useState({
-    total:5,
-    active:4,
-    resolved:1
-  })
+  const navigate = useNavigate();
+  const [complaints, setComplaints] = useState([]);
+  const [stats, setStats] = useState({ total: 0, active: 0, resolved: 0 });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      setLoading(true);
+      try {
+        const { data } = await complaintApi.getMy();
+        setComplaints(data);
+        const total = data.length;
+        const resolved = data.filter((c) => c.status === 'resolved').length;
+        const active = total - resolved;
+        setStats({ total, active, resolved });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchComplaints();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -77,7 +72,7 @@ const MyComplaints = () => {
         <div className="space-y-5">
           {complaints.map((c) => (
             <div
-              key={c.id}
+              key={c._id}
               className="bg-white rounded-xl shadow p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between"
             >
               {/* Left */}
@@ -99,11 +94,11 @@ const MyComplaints = () => {
                 </span>
 
                 <span className="text-gray-500 text-sm">
-                  {c.date}
+                  {new Date(c.createdAt).toLocaleDateString()}
                 </span>
 
                 <button
-                  onClick={() => navigate(`/user/complaint/${c.id}`)}
+                  onClick={() => navigate(`/user/complaint/${c._id}`)}
                   className="flex items-center cursor-pointer gap-1 border px-4 py-2 rounded-lg
                              hover:bg-gray-100 transition text-sm"
                 >

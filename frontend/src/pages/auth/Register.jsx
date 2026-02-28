@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { authApi } from "../../services/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -33,30 +34,12 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // ✅ REAL BACKEND CALL
-      const response = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
-
-      // ✅ Optional: save token if backend sends it
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("role", data.role);
-      }
-
-      navigate("/"); // redirect after success
+      const { data } = await authApi.register({ name, email, password });
+      // backend returns only message for registration
+      navigate("/"); // redirect after successful register
     } catch (err) {
-      setServerError(err.message);
+      const msg = err.response?.data?.message || err.message;
+      setServerError(msg);
     } finally {
       setLoading(false);
     }

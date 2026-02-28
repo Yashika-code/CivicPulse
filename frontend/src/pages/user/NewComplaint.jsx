@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import Navbar from '../../components/Navbar';
 import { ArrowLeft } from "lucide-react";
+import { complaintApi } from '../../services/api';
 
 const NewComplaint = () => {
   const navigate = useNavigate();
@@ -30,20 +31,28 @@ const NewComplaint = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
     setLoading(true);
 
-    const formData = {
+    const formBody = new FormData();
+    formBody.append("title", e.target.title.value.trim());
+    formBody.append("category", category);
+    formBody.append("subCategory", subCategory);
+    formBody.append("location", e.target.location.value.trim());
+    formBody.append("description", e.target.description.value.trim());
+    images.forEach((img) => {
+      formBody.append("images", img);
+    });
+
+    const validationErrors = validateForm({
       title: e.target.title.value.trim(),
       category,
       subCategory,
       location: e.target.location.value.trim(),
       description: e.target.description.value.trim(),
-    };
-
-    const validationErrors = validateForm(formData);
+    });
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -51,11 +60,16 @@ const NewComplaint = () => {
       return;
     }
 
-    setTimeout(() => {
-      console.log("Submitted:", formData);
+    try {
+      const { data } = await complaintApi.create(formBody);
+      // you could show success message here using data.message or data.complaint
+      navigate("/user/my-complaints");
+    } catch (err) {
+      console.error(err);
+      setErrors({ server: err.response?.data?.message || err.message });
+    } finally {
       setLoading(false);
-      navigate("/user");
-    }, 1000);
+    }
   };
 
   return (

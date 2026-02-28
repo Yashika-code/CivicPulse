@@ -67,7 +67,8 @@ const ProtectedRoute = ({ children, role }) => {
 
   // ❗ Correct logic
   if (!isAuthorized) {
-    return <Navigate to="/login" replace />;
+    // login page is mounted at root path
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

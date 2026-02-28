@@ -1,40 +1,56 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FileText, Clock, CheckCircle, Eye } from 'lucide-react'
 import Navbar from '../../components/Navbar'
+import { complaintApi } from '../../services/api';
 
-const complaints = [
-  {
-    id: 1,
-    title: 'Broken streetlight on Main Street',
-    category: 'Electricity',
-    status: 'Resolved',
-    date: 'Dec 20, 2025',
-  },
-  {
-    id: 2,
-    title: 'Pothole near community center',
-    category: 'Road',
-    status: 'In Progress',
-    date: 'Dec 22, 2025',
-  },
-  {
-    id: 3,
-    title: 'Water leakage in residential area',
-    category: 'Water',
-    status: 'Open',
-    date: 'Dec 25, 2025',
-  },
-]
+// list of complaints assigned to this officer, fetched from server
 
 const statusStyles = {
-  Resolved: 'bg-green-100 text-green-700',
-  'In Progress': 'bg-blue-100 text-blue-700',
-  Open: 'bg-yellow-100 text-yellow-700',
+  pending: 'bg-yellow-100 text-yellow-700',
+  resolved: 'bg-green-100 text-green-700',
+  'in-progress': 'bg-blue-100 text-blue-700',
+  open: 'bg-yellow-100 text-yellow-700',
 }
 
 const OfficerDashboard = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [complaints, setComplaints] = useState([]);
+  const [stats, setStats] = useState({ total: 0, active: 0, resolved: 0 });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      try {
+        const { data } = await complaintApi.getAssigned();
+        setComplaints(data);
+        const total = data.length;
+        const resolved = data.filter((c) => c.status === 'resolved').length;
+        const active = total - resolved;
+        setStats({ total, active, resolved });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const handleUpdate = async (id) => {
+    const newStatus = prompt('Enter new status (open, in-progress, resolved):');
+    if (!newStatus) return;
+    try {
+      const { data } = await complaintApi.updateStatus(id, newStatus);
+      setComplaints((prev) =>
+        prev.map((c) => (c._id === id ? data : c))
+      );
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update status');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,7 +82,7 @@ const OfficerDashboard = () => {
 
           {complaints.map((c) => (
             <div
-              key={c.id}
+              key={c._id}
               className="bg-white rounded-xl shadow-sm p-6
                          flex flex-col sm:flex-row sm:items-center sm:justify-between"
             >
@@ -90,13 +106,13 @@ const OfficerDashboard = () => {
                     {c.status}
                   </span>
                   <span className="text-xs text-gray-400">
-                    {c.date}
+                    {new Date(c.createdAt).toLocaleDateString()}
                   </span>
                 </div>
 
                 {/* View Button */}
                 <button
-                  onClick={() => navigate(`/complaints/${c.id}`)}
+                  onClick={() => navigate(`/officer/complaint/${c._id}`)}
                   className="flex items-center gap-1
                              border border-gray-300
                              px-4 py-2 rounded-lg text-sm text-gray-700
@@ -107,9 +123,9 @@ const OfficerDashboard = () => {
                 </button>
 
                 {/* Update Button */}
-                {c.status !== 'Resolved' && (
+                {c.status !== 'resolved' && (
                   <button
-                  onClick={()=>navigate("/officer/complaint/:id")}
+                    onClick={() => handleUpdate(c._id)}
                     className="flex items-center gap-1
                                bg-gradient-to-r from-blue-600 to-teal-500
                                text-white px-4 py-2 rounded-lg text-sm

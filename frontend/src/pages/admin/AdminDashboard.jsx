@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FileText,
   Users,
@@ -7,14 +7,36 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { adminApi } from "../../services/api";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [stats,setStats]=useState({
-    total:247,
-    department:8,
-    rate:"78%"
+    total:0,
+    department:0,
+    rate:"0%"
   })
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [complaintsResp, officersResp] = await Promise.all([
+          adminApi.getComplaints(),
+          adminApi.getOfficers(),
+        ]);
+        const complaints = complaintsResp.data;
+        const officers = officersResp.data;
+        const total = complaints.length;
+        const department = officers.length;
+        const resolvedCount = complaints.filter(c => c.status === 'resolved').length;
+        const rate = total ? Math.round((resolvedCount / total) * 100) + "%" : "0%";
+        setStats({ total, department, rate });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    load();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">

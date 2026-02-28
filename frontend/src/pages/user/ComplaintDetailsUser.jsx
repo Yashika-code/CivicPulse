@@ -1,10 +1,58 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { ArrowLeft, FileText, Clock, CheckCircle } from "lucide-react";
+import { complaintApi } from '../../services/api';
 
 const ComplaintDetails = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [complaint, setComplaint] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      try {
+        const { data } = await complaintApi.getMy();
+        const found = data.find((c) => c._id === id || c.complaintId === id);
+        setComplaint(found);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading complaint...</p>
+      </div>
+    );
+  }
+
+  if (!complaint) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Complaint not found.</p>
+      </div>
+    );
+  }
+
+  const {
+    title,
+    complaintId,
+    category,
+    location,
+    createdAt,
+    description,
+    images,
+    status,
+    assignedOfficer,
+  } = complaint;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -13,7 +61,7 @@ const ComplaintDetails = () => {
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Back */}
         <button
-          onClick={() => navigate("/complaints")}
+          onClick={() => navigate("/user/my-complaints")}
           className="flex items-center gap-2 text-gray-600 mb-6"
         >
           <ArrowLeft size={18} />
@@ -24,9 +72,9 @@ const ComplaintDetails = () => {
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-3xl font-semibold text-gray-900">
-              Pothole near community center
+              {title}
             </h1>
-            <p className="text-gray-500 mt-2">Complaint ID: #2</p>
+            <p className="text-gray-500 mt-2">Complaint ID: {complaintId || id}</p>
           </div>
 
           <button
@@ -93,23 +141,29 @@ const ComplaintDetails = () => {
                 Description
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                There is a large pothole on the main road near the community center
-                entrance. It has been causing issues for vehicles and poses a safety
-                risk, especially during rainy weather.
+                {description}
               </p>
             </div>
 
             {/* Images */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                Attached Images
-              </h2>
+            {images && images.length > 0 ? (
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                  Attached Images
+                </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="h-40 rounded-xl bg-gray-100"></div>
-                <div className="h-40 rounded-xl bg-gray-100"></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {images.map((src, idx) => (
+                    <img
+                      key={idx}
+                      src={src}
+                      alt={`img-${idx}`}
+                      className="h-40 w-full object-cover rounded-xl"
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
 
           {/* RIGHT SIDE */}
@@ -128,7 +182,7 @@ const ComplaintDetails = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Category</p>
-                    <p className="text-gray-800 font-medium">Road</p>
+                    <p className="text-gray-800 font-medium">{category}</p>
                   </div>
                 </div>
 
@@ -139,7 +193,7 @@ const ComplaintDetails = () => {
                   <div>
                     <p className="text-sm text-gray-500">Location</p>
                     <p className="text-gray-800 font-medium">
-                      123 Main Street, Near Community Center
+                      {location}
                     </p>
                   </div>
                 </div>
@@ -151,7 +205,7 @@ const ComplaintDetails = () => {
                   <div>
                     <p className="text-sm text-gray-500">Submitted</p>
                     <p className="text-gray-800 font-medium">
-                      Dec 22, 2025, 05:30 AM
+                      {new Date(createdAt).toLocaleString()}
                     </p>
                   </div>
                 </div>

@@ -1,10 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./pages/routes/ProtectedRoute";
 
+import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
-import AdminDashboard from "./pages/admin/adminDashboard"
+import AdminDashboard from "./pages/admin/AdminDashboard"
 import Departments from "./pages/admin/Departments"
 import Reports from "./pages/admin/Reports"
 import Users from "./pages/admin/Users"
@@ -24,7 +25,8 @@ const App = () => {
     return (
         <Routes>
             {/* Public */}
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/giveFeedback" element={<GiveFeedback />} />
 
@@ -33,12 +35,12 @@ const App = () => {
                 <ProtectedRoute role="citizen">
                     <UserDashboard />
                 </ProtectedRoute>} />
-            <Route path="/user/new-Complaint" element={
+            <Route path="/user/new-complaint" element={
                 <ProtectedRoute role="citizen">
                     <NewComplaint />
                 </ProtectedRoute>
                 } />
-            <Route path="/user/my-Complaints" element={
+            <Route path="/user/my-complaints" element={
                 <ProtectedRoute role="citizen">
                     <MyComplaints />
                 </ProtectedRoute>
@@ -68,11 +70,11 @@ const App = () => {
 
             {/* admin */}
             <Route path="/admin" element={
-                <ProtectedRoute role="officer">
+                <ProtectedRoute role="admin">
                     <AdminDashboard />
                 </ProtectedRoute>
                 } />
-            <Route path="admin/department/addDepartment" element={
+            <Route path="/admin/department/addDepartment" element={
                 <ProtectedRoute role="admin">
                     <NewDepartment />
                 </ProtectedRoute>

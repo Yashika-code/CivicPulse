@@ -1,0 +1,77 @@
+## Gamma AI Presentation Prompt: CivicPulse Project Showcase
+
+**Title:** CivicPulse - Modern Civic Complaint Management System
+
+**Objective:** Create a professional, concise presentation that showcases the CivicPulse project with minimal text and maximum visual impact.
+
+**Presentation Style:**
+- Professional and modern design
+- Clean, minimal text approach
+- High visual impact with icons, diagrams, and screenshots
+- Corporate presentation style
+- 7 slides maximum
+
+**Content Structure:**
+
+### Slide 1: Title Slide
+- Project Name: CivicPulse
+- Tagline: "Your Voice. Our Priority."
+- Your name/developer info
+- Professional background with civic/government theme
+
+### Slide 2: Problem Statement
+- Brief bullet points about civic complaint management challenges
+- Use icons to represent: slow response times, lack of transparency, poor tracking
+- Visual: Before/after comparison concept
+
+### Slide 3: Solution Overview
+- What is CivicPulse? (1-2 sentences)
+- Key value proposition
+- Visual: System architecture diagram (simple)
+
+### Slide 4: Key Features
+- 4 main features with icons:
+  - Secure & Trusted Platform
+  - Real-time Tracking
+  - Multi-Department Coordination
+  - User-friendly Interface
+- Use feature icons and minimal descriptions
+
+### Slide 5: Technology Stack
+- Frontend: React, Vite, Tailwind CSS, Lucide Icons
+- Backend: Node.js, Express, MongoDB
+- Authentication: JWT, Role-based access
+- Visual: Tech stack icons/logos
+
+### Slide 6: User Roles & Flow
+- 3 user types: Citizens, Officers, Admin
+- Simple user journey diagram
+- Key actions for each role
+- Visual: User flow chart
+
+### Slide 7: Impact & Statistics
+- 10K+ complaints resolved, 95% satisfaction rate
+- Multi-department coordination, 24h response time
+- Modern UI improvements: homepage, dashboard, login
+- Technology: React, Node.js, MongoDB, JWT
+- Visual: Combined statistics and tech stack showcase
+
+**Design Requirements:**
+- Use blue/purple color scheme (consistent with CivicPulse branding)
+- Include relevant icons for each section
+- Use screenshots of actual application where possible
+- Keep text to 3-5 bullet points per slide maximum
+- Use large, readable fonts
+- Professional corporate template style
+- Include subtle animations/transitions
+
+**Visual Elements to Include:**
+- Screenshots of the actual application
+- Icons representing civic services, technology, user experience
+- Simple diagrams for architecture and user flows
+- Statistics with visual representations
+- Before/after comparisons of UI improvements
+
+**Tone:** Professional, innovative, user-focused, government-tech appropriate
+
+**Note:** Focus on visual storytelling with minimal text. Let the design and visuals communicate the project's value and features effectively.
