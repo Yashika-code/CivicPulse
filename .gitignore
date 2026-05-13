@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+venv/
+env/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Build & Dist
+dist/
+build/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Git
+.git/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Docker
+.dockerignore
+Dockerfile
+
+# Misc
+.DS_Store
+package-lock.json
